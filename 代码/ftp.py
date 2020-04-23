@@ -6,6 +6,7 @@ import shutil
 import sys
 
 class gps_downloader(object):
+    buffer_size = 10240
     host = "igs.gnsswhu.cn"
     product = ['sp3','clk','snx','sum','erp','cls','ssc','res','igs']
     data_path_prefix = '/pub/gps/data/daily/'
@@ -14,6 +15,8 @@ class gps_downloader(object):
     day_in_week = None
     gps_week = None
     total = None
+    download_list = []
+    save_list = []
     #width = 50
 
     def ppprint(self,f,data,t):
@@ -105,43 +108,27 @@ class gps_downloader(object):
         ftp.connect(host=self.host)  # 连接ftp
         ftp.login()  # 登录ftp
         return ftp
-    def download_file(self, ftp_file_path,file_type):
+
+    def check_save_folder(self,path):
+        #print(path)
+        if not os.path.exists(path):
+            os.makedirs(path)
+
+    def download_file(self):
         """
         从ftp下载文件到本地
-        :param ftp_file_path: ftp下载文件路径
-        :param dst_file_path: 本地存放路径
-        :return:
         """
-
-        buffer_size = 10240  
-        ftp = self.ftp_connect()
-        #print(ftp.getwelcome())  #显示登录ftp信息
-        file_list = ftp.nlst(ftp_file_path)
-        file_list = list(map(lambda x:x.split('/')[-1],file_list))
-        download_list = self.select_file(file_list,file_type)
-        write_file = None
-        each_bar = tqdm(total=len(download_list))
-
-        for file_name in download_list:
+        bar = tqdm(total=len(self.download_list),bar_format='{desc}: 正在下载 {percentage:3.0f}%|{bar} {n_fmt}/{total_fmt} [{elapsed}<{remaining}|')
+        
+        #print(self.download_list)
+        for i in range(len(self.download_list)):
             
-            write_file = os.path.join(self.save_path, file_name)
-            ftp_file = os.path.join(ftp_file_path, file_name)
-            #print(self.save_path)
-            #print(write_file)
-            #print('下载文件:',file_name,end='  ')
-            
-            #ftp_file = os.path.join(ftp_file_path, file_name)
-            #write_file = os.path.join(dst_file_path, file_name)
-            with open(write_file, "wb") as f:
-                ftp.retrbinary('RETR {0}'.format(ftp_file), f.write, buffer_size)
+            with open(self.save_list[i], "wb") as f:
+                self.ftp.retrbinary('RETR {0}'.format(self.download_list[i]), f.write, self.buffer_size)
                 f.close()
-            #print('ok')
-            each_bar.update(1)
-            del write_file
-        each_bar.close()
-        
-        
-        ftp.quit()
+            bar.update(1)
+            
+        bar.close()
 
     def gps_filter(self,typ):
         if typ == 'n.rnx':
@@ -151,8 +138,16 @@ class gps_downloader(object):
         elif typ =='o.rnx':
             return 'MO'
 
-        pass
+        
 
+    def check_stations(self,name):
+        if self.stations:
+            for item in self.stations:
+                if item.upper() in name.upper():
+                    return True
+            return False
+        else:
+            return True
     def select_file(self,file_list,file_type):
         '''
         选择文件夹内的文件
@@ -160,14 +155,15 @@ class gps_downloader(object):
         l = []
         for name in file_list:
             if file_type in self.data:
-                if '.rnx' in file_type :
-                    if self.gps_filter(file_type) in name:
+                if self.check_stations(name):
+                    if '.rnx' in file_type :
+                        if self.gps_filter(file_type) in name:
+                            l.append(name)
+                    elif '_' in file_type:
+                        if 'rnx' not in name:
+                            l.append(name)
+                    else:
                         l.append(name)
-                elif '_' in file_type:
-                    if 'rnx' not in name:
-                        l.append(name)
-                else:
-                    l.append(name)
             else:
                 if 'igs' in file_type:
                     if 'igs' in name and 'sp3' in name and self.gps_week + self.day_in_week in name:
@@ -218,28 +214,61 @@ class gps_downloader(object):
 
         return dst_path
 
+    def serach_files(self,path,dst_type,time):
+
+        file_list = self.ftp.nlst(path)
+        file_list = list(map(lambda x:x.split('/')[-1],file_list))
+        download_list = self.select_file(file_list,dst_type)
+        
+            
+        for item in download_list:
+            #生成保存的文件列表
+            if dst_type in self.data:
+                ttt='data'
+            else:
+                ttt='product'
+            self.check_save_folder(os.path.join(self.save_path,time,ttt))
+            self.save_list.append(os.path.join(self.save_path,time,ttt,item))
+        for item in download_list:
+            self.download_list.append(os.path.join(path,item))
+
     def run(self):
         '''
-            运行。分析需要的数据类型，日期范围，然后调用进行下载
-            对于每个时间点的每种文件类型，分析出目录，然后调用下载
+            运行。
+            先找下载的文件放到download_list里面，在下载。
         '''
         
         #input('按任意键开始下载.')
         print()
         #total_bar = tqdm(total = self.total)
         print()
+        #检查文件
         if os.path.exists(self.save_path):
             shutil.rmtree(self.save_path)  
         os.makedirs(self.save_path)
-        i = 1
+        
+        #连接服务器
+        try:
+            self.ftp = self.ftp_connect()
+        except :
+            print('无法连接服务器')
+            sys.exit(1)
+        search_bar = tqdm(total=self.total,bar_format='正在搜索 {percentage:3.0f}%|{bar} {n_fmt}/{total_fmt} [{elapsed}<{remaining}|')
         for time in self.times:
             
             for dst_type in self.filetype:
                 path = self.get_path(time,dst_type)
-                print('正在下载{}/{}组'.format(i,self.total))
-                self.download_file(path,dst_type)
+                self.serach_files(path,dst_type,time)
+                #sys.stdout.write('已找到{}个文件'.format(len(self.download_list))+'\r')
+                #sys.stdout.flush()
+                search_bar.update(1)
+                #self.download_file()
                 #total_bar.update(1)
-                i = i+1
+        search_bar.close()
+        print('已搜索到{}个文件，开始下载'.format(len(self.download_list)))
+
+        self.download_file()
+        self.ftp.quit()
         #total_bar.close()
         
         

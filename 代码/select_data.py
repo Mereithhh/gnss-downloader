@@ -5,11 +5,12 @@ path = r'/Users/vanlu/Documents/毕业设计/代码/testt'
 
 
 selector = {
-    'source':'nasa',
-    'filetype': ['igs','n.rnx'],
-    'times': ['2019-01-01','2020-03-01'],
-    'stations': []
+    'source':'wuhan',
+    'filetype': ['igs','_n'],
+    'times': ['2020-03-01','2020-03-01'],
+    'stations': ['jfng']
 }
+
 
 dl = gps_downloader(selector=selector,save_path=path)
 #print(dl.get_gps_week('2020-01-01'),dl.day_in_week)
@@ -23,7 +24,7 @@ for x in range(1,33,1):
         svs.append('G'+str(x))
 #del svs
 #svs = ['G31','G32']
-boy = rinex_selector(path,svs)
-boy.auto_run()
+#boy = rinex_selector(path,svs)
+#boy.auto_run()
 #boy.see('连续','G31')
 #boy.see('去重','G32')
