@@ -1,7 +1,7 @@
 # gnss-downloader
 
 
-
+![image](https://github.com/Mereithhh/gnss-downloader/blob/master/pics/show.gif)
 一个好用的GPS卫星数据检索下载工具.
 
 
