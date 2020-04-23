@@ -3,9 +3,9 @@
 
 ![image](https://github.com/Mereithhh/gnss-downloader/blob/master/pics/show.gif)
 <br>
-一个好用的GPS卫星数据检索下载工具.
+**一个好用的GPS卫星数据检索下载工具**
 <br>
-A useful tool for search and download gps datas. 
+**A useful tool for search and download gps datas** 
 
 ## 使用方法
 
