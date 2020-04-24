@@ -30,19 +30,13 @@ class MyMainWindow(QMainWindow,Ui_MainWindow):
     types= [
         'o.rnx','n.rnx','m.rnx','_n','_m','_o','igs','igu','igr'
     ]
-    
-    '''
-    手动指定：请输入站台4字英文，空格分开，默认则选择所有观测站
-
-根据卫星号自动选择：请输入2位数字卫星号，空格分开，程序会根据卫星号自动选择具有最大观测时常的观测站
-
-'''
-
+    choice_way = 'all'
+    db = {}
 
     def __init__(self,parent=None):
         super(MyMainWindow,self).__init__(parent)
         self.setupUi(self)
-        
+        self.paused = False
         now = QDate.currentDate()
         self.dateEdit_start.setDate(now.addDays(-30))
         self.dateEdit_end.setDate(now.addDays(-30))
@@ -53,6 +47,7 @@ class MyMainWindow(QMainWindow,Ui_MainWindow):
         self.pushButton_english.clicked.connect(self.english)
         self.pushButton_shoudong.clicked.connect(self.shoudong)
         self.pushButton_auto.clicked.connect(self.auto)
+        self.pushButton_pause.clicked.connect(self.pause)
         self.red = QPalette()
         self.red.setColor(QPalette.Window,Qt.red)
         self.boxs =  [
@@ -72,17 +67,55 @@ class MyMainWindow(QMainWindow,Ui_MainWindow):
         self.checkBox_igs_sp3.setChecked(True)
         self.savepath = os.path.join(os.getcwd(),'下载数据')
         self.label_path.setText(self.savepath)
+        
+    def flush(self):
+        QApplication.processEvents()
+
+
+    def pause(self):
+        if self.paused == False:
+
+            self.paused = True
+        else:
+            self.paused = False
 
     def shoudong(self):
-       
-        self.textEdit_stations.setText('莫得开发,默认所有观测站')
-
+        
+        self.textEdit_stations.setText('手动指定：请输入站台4字英文，空格分开，默认则选择所有观测站. <br>例如: hksl afkg')
+        self.choice_way = 'shoudong'
     def auto(self):
-        self.textEdit_stations.setText('莫得开发,默认所有观测站')
-
+        self.textEdit_stations.setText('自动根据卫星号选择具有最大观测时常的观测站.输入2位卫星号数字，空格间隔. <br>例如: 01 32 31 40')
+        self.choice_way = 'auto'
     def english(self):
-        self.show_warning('没得开发')
-
+        self.label.setText('Select FileType')
+        self.label_2.setText('Select Time')
+        self.label_5.setText('Select Stations')
+        self.label_6.setText('Source Server')
+        self.label_8.setText('Save Path')
+        self.label_3.setText('From')
+        self.label_4.setText('To')
+        self.label_7.setText('武汉 is faster in China.')
+        self.label_10.setText('NASA is the best.')
+        self.pushButton_shoudong.setText('Input by my self.')
+        self.pushButton_auto.setText('Select by gps number automanticly')
+        self.pushButton_path.setText('Select Path')
+        self.pushButton_download.setText('Start')
+        self.pushButton_pause.setText('Pause')
+        self.pushButton_open_save_path.setText('Open save path')
+        self.pushButton_about.setText('About')
+        self.label_info.setText('Please make your choice and click Start.')
+        self.checkBox_igr_sp3.setText('igr.sp3')
+        self.checkBox_igu_sp3.setText('igu.sp3')
+        self.checkBox_igs_sp3.setText('igs.sp3')
+        self.checkBox_rnx_m.setText('MM.rnx(3.x)')
+        self.checkBox_rnx_n.setText('GN.rnx(3.x)')
+        self.checkBox_rnx_o.setText('MO.rnx(3.x)')
+        self.checkBox_m.setText('.m(2.x)')
+        self.checkBox_n.setText('.n(2.x)')
+        self.checkBox_o.setText('.o(2.x)')
+        self.textEdit_stations.setText('click one of the buttons left.')
+        self.radioButton_nasa.setChecked(True)
+        self.setWindowTitle('GNSS-Downloader   v2.0 by Mereith.')
     def open_save_path(self):
         if not os.path.exists(self.savepath):
             os.makedirs(self.savepath)
@@ -130,6 +163,30 @@ class MyMainWindow(QMainWindow,Ui_MainWindow):
             return True
 
     def get_stations(self):
+        if self.choice_way == 'all':
+            pass
+        elif self.choice_way =='shoudong':
+            self.shoudong_get()
+        else:
+            self.auto_get()
+
+    def auto_get(self):
+        text = self.textEdit_stations.toPlainText()
+        svs = []
+        if re.match(r'([0-9]{2} )+',text):
+            for item in text.split(' '):
+                svs.append(item)
+        if svs:
+            for item in self.search_stations(svs):
+                self.stations.append(item)
+
+    def search_stations(self,data):
+        door = []
+        for item in data:
+            door.append(self.db[item])
+
+
+    def shoudong_get(self):
         text = self.textEdit_stations.toPlainText()
         if re.match(r'([a-zA-Z]{4})+',text):
             for item in text.split(' '):

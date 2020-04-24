@@ -9,7 +9,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>626</width>
+    <width>671</width>
     <height>717</height>
    </rect>
   </property>
@@ -345,7 +345,7 @@
    <widget class="QTextEdit" name="textEdit_stations">
     <property name="geometry">
      <rect>
-      <x>310</x>
+      <x>340</x>
       <y>220</y>
       <width>251</width>
       <height>71</height>
@@ -487,7 +487,7 @@ p, li { white-space: pre-wrap; }
    <widget class="QPushButton" name="pushButton_path">
     <property name="geometry">
      <rect>
-      <x>480</x>
+      <x>510</x>
       <y>440</y>
       <width>81</width>
       <height>41</height>
@@ -529,7 +529,7 @@ p, li { white-space: pre-wrap; }
    <widget class="QPushButton" name="pushButton_about">
     <property name="geometry">
      <rect>
-      <x>460</x>
+      <x>490</x>
       <y>500</y>
       <width>100</width>
       <height>41</height>
@@ -552,7 +552,7 @@ p, li { white-space: pre-wrap; }
      <rect>
       <x>40</x>
       <y>630</y>
-      <width>531</width>
+      <width>551</width>
       <height>41</height>
      </rect>
     </property>
@@ -691,7 +691,7 @@ p, li { white-space: pre-wrap; }
    <widget class="QPushButton" name="pushButton_open_save_path">
     <property name="geometry">
      <rect>
-      <x>190</x>
+      <x>270</x>
       <y>500</y>
       <width>100</width>
       <height>41</height>
@@ -712,7 +712,7 @@ p, li { white-space: pre-wrap; }
    <widget class="QPushButton" name="pushButton_english">
     <property name="geometry">
      <rect>
-      <x>330</x>
+      <x>380</x>
       <y>500</y>
       <width>100</width>
       <height>41</height>
@@ -770,6 +770,27 @@ p, li { white-space: pre-wrap; }
     </property>
     <property name="text">
      <string>根据卫星号自动选择</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pushButton_pause">
+    <property name="geometry">
+     <rect>
+      <x>160</x>
+      <y>500</y>
+      <width>100</width>
+      <height>41</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Arial</family>
+      <pointsize>7</pointsize>
+      <weight>50</weight>
+      <bold>false</bold>
+     </font>
+    </property>
+    <property name="text">
+     <string>暂停</string>
     </property>
    </widget>
   </widget>

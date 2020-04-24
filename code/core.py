@@ -47,8 +47,8 @@ class gps_downloader(object):
     def change_host(self,name):
         if name=='nasa':
             self.host='cddis.nasa.gov'
-            self.data_path_prefix = '/gnss/data/daily/'
-            self.product_path_prefix = '/gnss/products/'
+            self.data_path_prefix = '/pub/gps/data/daily/'
+            self.product_path_prefix = '/pub/gps/products/'
 
         else:
             self.host="igs.gnsswhu.cn"
@@ -135,6 +135,16 @@ class gps_downloader(object):
         ui.show_info('下载中.......共{}个文件.已下载{}个 '.format(len(self.download_list),0))
         ui.updatebar(0,1)
         for i in range(len(self.download_list)): 
+            if ui.paused:
+                ui.show_warning('已暂停')
+                while True:
+                    ui.flush()
+                    ui.pushButton_pause.setText('继续')
+                    if not ui.paused :
+                        ui.pushButton_pause.setText('暂停')
+                        ui.show_info('继续下载')
+                        break
+            print(self.download_list[i])
             with open(self.save_list[i], "wb") as f:
                 self.ftp.retrbinary('RETR {0}'.format(self.download_list[i]), f.write, self.buffer_size)
                 f.close()
@@ -256,7 +266,7 @@ class gps_downloader(object):
             self.check_save_folder(os.path.join(self.save_path,time,ttt))
             self.save_list.append(os.path.join(self.save_path,time,ttt,item))
         for item in download_list:
-            self.download_list.append(os.path.join(path,item))
+            self.download_list.append(path + r'/' + item)
 
         return True
 

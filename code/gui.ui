@@ -510,7 +510,7 @@ p, li { white-space: pre-wrap; }
      <rect>
       <x>40</x>
       <y>500</y>
-      <width>100</width>
+      <width>80</width>
       <height>41</height>
      </rect>
     </property>
@@ -529,9 +529,9 @@ p, li { white-space: pre-wrap; }
    <widget class="QPushButton" name="pushButton_about">
     <property name="geometry">
      <rect>
-      <x>410</x>
+      <x>430</x>
       <y>500</y>
-      <width>100</width>
+      <width>80</width>
       <height>41</height>
      </rect>
     </property>
@@ -691,9 +691,9 @@ p, li { white-space: pre-wrap; }
    <widget class="QPushButton" name="pushButton_open_save_path">
     <property name="geometry">
      <rect>
-      <x>170</x>
+      <x>230</x>
       <y>500</y>
-      <width>100</width>
+      <width>80</width>
       <height>41</height>
      </rect>
     </property>
@@ -712,9 +712,9 @@ p, li { white-space: pre-wrap; }
    <widget class="QPushButton" name="pushButton_english">
     <property name="geometry">
      <rect>
-      <x>290</x>
+      <x>330</x>
       <y>500</y>
-      <width>100</width>
+      <width>80</width>
       <height>41</height>
      </rect>
     </property>
@@ -770,6 +770,27 @@ p, li { white-space: pre-wrap; }
     </property>
     <property name="text">
      <string>根据卫星号自动选择</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pushButton_open_pause">
+    <property name="geometry">
+     <rect>
+      <x>140</x>
+      <y>500</y>
+      <width>80</width>
+      <height>41</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Arial</family>
+      <pointsize>10</pointsize>
+      <weight>50</weight>
+      <bold>false</bold>
+     </font>
+    </property>
+    <property name="text">
+     <string>暂停</string>
     </property>
    </widget>
   </widget>
