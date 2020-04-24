@@ -1,12 +1,26 @@
 import sys
 import os
 from PyQt5.QtCore import QDate,Qt
+
 from PyQt5.QtGui import QPalette
 from PyQt5.QtWidgets import QApplication,QMainWindow,QDialog,QFileDialog
-from Ui_gui import Ui_MainWindow
+
 from Ui_about import Ui_About
 import re
 from core import gps_downloader
+
+app = QApplication(sys.argv)
+def check_high_dpi():
+     h = str(QApplication.desktop().screenGeometry()).split(',')[-2]
+     if int(h) > 1920:
+         return True
+     return False
+
+if 'win' in sys.platform and check_high_dpi():
+    from Ui_gui_high_dpi import Ui_MainWindow
+else:
+    from Ui_gui import Ui_MainWindow
+
 class MyMainWindow(QMainWindow,Ui_MainWindow):
     filetype = []
     source = None
@@ -17,11 +31,18 @@ class MyMainWindow(QMainWindow,Ui_MainWindow):
         'o.rnx','n.rnx','m.rnx','_n','_m','_o','igs','igu','igr'
     ]
     
+    '''
+    手动指定：请输入站台4字英文，空格分开，默认则选择所有观测站
+
+根据卫星号自动选择：请输入2位数字卫星号，空格分开，程序会根据卫星号自动选择具有最大观测时常的观测站
+
+'''
 
 
     def __init__(self,parent=None):
         super(MyMainWindow,self).__init__(parent)
         self.setupUi(self)
+        
         now = QDate.currentDate()
         self.dateEdit_start.setDate(now.addDays(-30))
         self.dateEdit_end.setDate(now.addDays(-30))
@@ -29,6 +50,9 @@ class MyMainWindow(QMainWindow,Ui_MainWindow):
         self.pushButton_download.clicked.connect(self.go)
         self.pushButton_path.clicked.connect(self.select_path)
         self.pushButton_open_save_path.clicked.connect(self.open_save_path)
+        self.pushButton_english.clicked.connect(self.english)
+        self.pushButton_shoudong.clicked.connect(self.shoudong)
+        self.pushButton_auto.clicked.connect(self.auto)
         self.red = QPalette()
         self.red.setColor(QPalette.Window,Qt.red)
         self.boxs =  [
@@ -48,10 +72,26 @@ class MyMainWindow(QMainWindow,Ui_MainWindow):
         self.checkBox_igs_sp3.setChecked(True)
         self.savepath = os.path.join(os.getcwd(),'下载数据')
         self.label_path.setText(self.savepath)
+
+    def shoudong(self):
+       
+        self.textEdit_stations.setText('莫得开发,默认所有观测站')
+
+    def auto(self):
+        self.textEdit_stations.setText('莫得开发,默认所有观测站')
+
+    def english(self):
+        self.show_warning('没得开发')
+
     def open_save_path(self):
         if not os.path.exists(self.savepath):
             os.makedirs(self.savepath)
-        os.startfile(self.savepath)
+
+
+        if 'drwin' in sys.platform:
+            os.system('open "'+self.savepath+'"')
+        else:
+            os.startfile(self.savepath)
 
 
 
@@ -108,7 +148,9 @@ class MyMainWindow(QMainWindow,Ui_MainWindow):
         return True
         
     def updatebar(self,now,total):
-        self.progressBar.setValue(now/total*100)
+        val= int ( str(now/total*100).split('.')[0])
+        self.progressBar.setValue(val)
+        QApplication.processEvents()
 
 
 
@@ -160,8 +202,10 @@ class MyAboutWindow(QDialog,Ui_About):
 
 
 
-app = QApplication(sys.argv)
+    
+
 mainw = MyMainWindow()
 mainw.show()
-
 sys.exit(app.exec_())
+
+    

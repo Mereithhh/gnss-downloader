@@ -6,13 +6,13 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1167</width>
-    <height>1152</height>
+    <width>389</width>
+    <height>400</height>
    </rect>
   </property>
   <property name="font">
    <font>
-    <family>Microsoft YaHei UI</family>
+    <family>Arial</family>
     <pointsize>14</pointsize>
     <weight>75</weight>
     <bold>true</bold>
@@ -26,7 +26,7 @@
     <normaloff>../favicon.ico</normaloff>../favicon.ico</iconset>
   </property>
   <property name="styleSheet">
-   <string notr="true">background-image: url(:/support.jpg);</string>
+   <string notr="true">border-image: url(:/support.jpg);</string>
   </property>
  </widget>
  <resources>
