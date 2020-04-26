@@ -381,7 +381,7 @@ class Ui_MainWindow(object):
 "<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
 "p, li { white-space: pre-wrap; }\n"
 "</style></head><body style=\" font-family:\'Arial\'; font-size:7pt; font-weight:400; font-style:normal;\">\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:10pt; font-weight:600;\">请点击模式选择按钮.</span></p></body></html>"))
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:8pt; font-weight:600;\">请点击模式选择按钮.否则默认所有观测站.</span></p></body></html>"))
         self.label_6.setText(_translate("MainWindow", "请选择下载源"))
         self.radioButton_wuhan.setText(_translate("MainWindow", "武汉(igs.gnsswhu.cn)"))
         self.radioButton_nasa.setText(_translate("MainWindow", "NASA(cddis.nasa.gov)"))

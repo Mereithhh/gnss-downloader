@@ -1,20 +1,7 @@
 from rinex_selector import rinex_selector
-from ftp import gps_downloader
 
-path = r'/Users/vanlu/Documents/毕业设计/代码/testt'
+path = r'C:\Users\pve_win10_1\Desktop\2020-03-25\data\生成数据'
 
-
-selector = {
-    'source':'wuhan',
-    'filetype': ['igs','_n'],
-    'times': ['2020-03-01','2020-03-01'],
-    'stations': ['jfng']
-}
-
-
-dl = gps_downloader(selector=selector,save_path=path)
-#print(dl.get_gps_week('2020-01-01'),dl.day_in_week)
-dl.run()
 
 svs = []
 for x in range(1,33,1):
@@ -24,7 +11,9 @@ for x in range(1,33,1):
         svs.append('G'+str(x))
 #del svs
 #svs = ['G31','G32']
-#boy = rinex_selector(path,svs)
+boy = rinex_selector(path,svs)
+#boy.door(path)
+boy.sort(r'C:\Users\pve_win10_1\Desktop\gnss-downloader\code\db.json')
 #boy.auto_run()
 #boy.see('连续','G31')
 #boy.see('去重','G32')

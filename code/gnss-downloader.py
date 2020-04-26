@@ -8,6 +8,7 @@ from PyQt5.QtWidgets import QApplication,QMainWindow,QDialog,QFileDialog
 from Ui_about import Ui_About
 import re
 from core import gps_downloader
+import json
 
 app = QApplication(sys.argv)
 def check_high_dpi():
@@ -32,6 +33,8 @@ class MyMainWindow(QMainWindow,Ui_MainWindow):
     ]
     choice_way = 'all'
     db = {}
+    again = False
+    tobec = False
 
     def __init__(self,parent=None):
         super(MyMainWindow,self).__init__(parent)
@@ -67,7 +70,16 @@ class MyMainWindow(QMainWindow,Ui_MainWindow):
         self.checkBox_igs_sp3.setChecked(True)
         self.savepath = os.path.join(os.getcwd(),'下载数据')
         self.label_path.setText(self.savepath)
+        self.readdb()
         
+
+
+    def closeEvent(self, event):
+        sys.exit()
+
+
+
+
     def flush(self):
         QApplication.processEvents()
 
@@ -84,7 +96,7 @@ class MyMainWindow(QMainWindow,Ui_MainWindow):
         self.textEdit_stations.setText('手动指定：请输入站台4字英文，空格分开，默认则选择所有观测站. <br>例如: hksl afkg')
         self.choice_way = 'shoudong'
     def auto(self):
-        self.textEdit_stations.setText('自动根据卫星号选择具有最大观测时常的观测站.输入2位卫星号数字，空格间隔. <br>例如: 01 32 31 40')
+        self.textEdit_stations.setText('自动根据卫星号选择具有最大观测时常的观测站.输入2位卫星号(01-32)，空格间隔.  例如: 01 32 31')
         self.choice_way = 'auto'
     def english(self):
         self.label.setText('Select FileType')
@@ -173,17 +185,31 @@ class MyMainWindow(QMainWindow,Ui_MainWindow):
     def auto_get(self):
         text = self.textEdit_stations.toPlainText()
         svs = []
-        if re.match(r'([0-9]{2} )+',text):
+        door = re.match(r'([0-3][0-9] )+',text)
+        if door:
+            print(text)
             for item in text.split(' '):
                 svs.append(item)
+        else:
+            self.show_warning('输入错误。点击继续则按照正确的部分匹配，若无，则匹配所有观测站')
+            self.tobec = True
+            self.pause()
         if svs:
-            for item in self.search_stations(svs):
-                self.stations.append(item)
+            try:
+                for item in self.search_stations(svs):
+                    self.stations.append(item)
+            except:
+                self.show_warning('输入错误。点击继续则按照正确的部分匹配，若无，则匹配所有观测站')
+                self.tobec = True
+                self.pause()
 
     def search_stations(self,data):
         door = []
         for item in data:
-            door.append(self.db[item])
+            r= self.db[str(item)]
+            for mmm in r:
+                door.append(mmm)
+        return door
 
 
     def shoudong_get(self):
@@ -191,6 +217,10 @@ class MyMainWindow(QMainWindow,Ui_MainWindow):
         if re.match(r'([a-zA-Z]{4})+',text):
             for item in text.split(' '):
                 self.stations.append(item)
+        else:
+            self.show_warning('输入错误。点击继续则按照正确的部分匹配，若无，则匹配所有观测站')
+            self.tobec = True
+            self.pause()
 
 
     def get_cheakbox_info(self,box,text):
@@ -214,6 +244,7 @@ class MyMainWindow(QMainWindow,Ui_MainWindow):
         
 
     def start(self):
+        #print(self.stations)
         selector = {
             'source': self.source,
             'filetype': self.filetype,
@@ -222,6 +253,7 @@ class MyMainWindow(QMainWindow,Ui_MainWindow):
         }
         #print(selector)
         #print(self.savepath)
+        
         self.downloader = gps_downloader(selector,self.savepath)
         self.downloader.gui(self)
         del self.downloader
@@ -241,15 +273,37 @@ class MyMainWindow(QMainWindow,Ui_MainWindow):
         self.source = None
         self.times = []
         self.stations = []
+        self.downloader = None
+
+    def readdb(self):
+        try:
+            f = open('./lib/db.json','r')
+            self.db = json.load(f)
+            print(self.db)
+            f.close()
+        except:
+            self.show_warning('无法读取db.json文件.')
+        
+        
 
     def go(self):
         # 获取数据、检查数据、搜索、下载
-        self.clear_cache()
-        if not self.get_info():
-            self.show_warning('请正确选择项目再点击下载！')
+
+        if not self.paused or self.again:
+            self.clear_cache()
+            if not self.get_info():
+                self.show_warning('请正确选择项目再点击下载！')
+            else:
+                self.start()
+
         else:
-            
-            self.start()
+            self.again = True
+            self.clear_cache()
+            self.show_info('已取消.')
+            self.updatebar(0,1)
+            self.pushButton_download.setText('开始下载')
+            self.pushButton_pause.setText('暂停')
+            self.paused = False
         
 
 class MyAboutWindow(QDialog,Ui_About):
@@ -263,6 +317,7 @@ class MyAboutWindow(QDialog,Ui_About):
 
 mainw = MyMainWindow()
 mainw.show()
-sys.exit(app.exec_())
-
+if app.exec_():
+    sys.exit()
+#sys.exit(app.exec_())
     

@@ -13,9 +13,9 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_About(object):
     def setupUi(self, About):
         About.setObjectName("About")
-        About.resize(1167, 1150)
+        About.resize(671, 717)
         font = QtGui.QFont()
-        font.setFamily("Microsoft YaHei UI")
+        font.setFamily("Arial")
         font.setPointSize(14)
         font.setBold(True)
         font.setWeight(75)
@@ -23,7 +23,7 @@ class Ui_About(object):
         icon = QtGui.QIcon()
         icon.addPixmap(QtGui.QPixmap("c:\\Users\\pve_win10_1\\Desktop\\gnss-downloader\\code\\../favicon.ico"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         About.setWindowIcon(icon)
-        About.setStyleSheet("background-image: url(./pyqt/support.jpg);")
+        About.setStyleSheet("border-image: url(lib/support.jpg);")
 
         self.retranslateUi(About)
         QtCore.QMetaObject.connectSlotsByName(About)

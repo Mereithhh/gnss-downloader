@@ -4,23 +4,25 @@ import numpy as np
 import json
 import sys
 import shutil
-import asyncio
 import pymongo
 from tqdm import tqdm
 
-async def worker(each,navpath,working_svname,i,j):
+def worker(each,navpath,working_svname,i,j):
     '''
     一个工具人，用来处理相关的文件
     '''
     #print(os.path.join(navpath, each))
     data = gr.load(os.path.join(navpath, each))
-    times = data.sel(sv=working_svname).dropna(dim='time',how='all').time.values
+    try:
+        times = data.sel(sv=working_svname).dropna(dim='time',how='all').time.values
+    except:
+        return '0'
     r = list(map(lambda x:str(x).split('.')[0],times))
     #sys.stdout.write('共{}个文件，正在处理{}号'.format(j,i)+'\r')
     #sys.stdout.flush()
     return r
 
-async def main(files,navpath,working_svname,bar):
+def main(files,navpath,working_svname,bar):
     db = {}
     #动态变量=locals()
     #nums = len(files)
@@ -35,9 +37,9 @@ async def main(files,navpath,working_svname,bar):
     '''
     
     for file in files:
-        t = asyncio.create_task(worker(file,navpath,working_svname,files.index(file),len(files)))
-        await t
-        db[file] = t.result()
+        r = worker(file,navpath,working_svname,files.index(file),len(files))
+        if r !='0':
+            db[file] =r
         bar.update(1)
 
     #sys.stdout.write('[{}]完成！'.format(working_svname)+'\r\n')
@@ -53,9 +55,10 @@ class rinex_selector():
         self.navpath = navpath
         self.svs = svs
         self.working_svname =svs[0]
-        self.total = len(navpath) * len(svs)
+        self.file_list = self.file_filter(os.listdir(navpath))
+        self.total = len(self.file_list) * len(svs)
     
-    def drop_points(self,datas):
+    def drop_points(self,datas,namesv):
         '''
         时间信息的连续的最大时间范围相关信息
         '''
@@ -64,17 +67,20 @@ class rinex_selector():
             for i in range(len(data)):
                 if float(data[i][2])>float(data[0][2]):
                     most = i
-            return {'start': data[most][0],'end':data[most][1],'last':data[most][2]}
+            rrr= {'start': data[most][0],'end':data[most][1],'last':data[most][2]}
+            return rrr
 
         db = {}
         #print('[{}]时间数据连续化'.format(self.working_svname))
-        
         for name,times in datas.items():
             start_t =None
             last_t = None
             end_t = None
             间隔列表 = []
+            print('正在进行{}.'.format(name))
+            #print(times)
             for t in times:
+
                 
                 if not last_t:
                     last_t = t
@@ -94,20 +100,24 @@ class rinex_selector():
                         last_t = t
                 
                 #print('当前的t：{}  last:{}  start:{}  end:{} '.format(t,last_t,start_t,end_t))
+            #print('aaa')
             if np.datetime64(start_t)<np.datetime64(end_t):
                 间隔列表.append([start_t,end_t,str(int(str(np.datetime64(end_t) - np.datetime64(start_t)).split(' ')[0])/3600)])   
+            #print(间隔列表)
+            if len(间隔列表)!=0:
+                返回数据 = find_most(间隔列表)
+            #print(返回数据)
+                db[name]=  返回数据               
+                返回数据['filename'] = name
+                返回数据['gps']= namesv
+                self.navdb.insert(返回数据)
+        #self.save(db,self.working_svname+'连续时间数据.json')
             
-            返回数据 = find_most(间隔列表)
-            db[name]=  返回数据               
-            返回数据['filename'] = name
-            返回数据['gps']= self.working_svname
-            
-        self.save(db,self.working_svname+'连续时间数据.json')
-        self.navdb.insert(返回数据)
         #print('[{}]完成！'.format(self.working_svname))
+        #self.save(db,'door.json')
         return db
 
-    def drop_same_and_contain(self,datas):
+    def drop_same_and_contain(self,datas,namvesv):
         '''
         从获取的持续时间字典中删除持续时间一毛一样的，以及包括了的
         '''
@@ -145,7 +155,7 @@ class rinex_selector():
             print('时间点：{}'.format(datas[name]))
 
     def save(self,data,filename):
-        path = self.navpath + r'/生成数据'
+        path =os.path.join(self.navpath ,'生成数据')
         f = open(os.path.join(path,filename),mode='w',encoding='utf-8')
         f.write(json.dumps(data,indent=4))
         f.close() 
@@ -159,12 +169,12 @@ class rinex_selector():
         return r
     def get_nav_time_raw_info(self):
         db = {}
-        files = os.listdir(self.navpath)
+        
         #print('[{}]获取数据并提取时间'.format(self.working_svname))
 
-        door = self.file_filter(files)
+        
         #print(door)
-        db = asyncio.run(main(door,self.navpath,self.working_svname,self.bar))
+        db = main(self.file_list,self.navpath,self.working_svname,self.bar)
         
         self.save(db,self.working_svname+'原始时间数据.json')
         #print('[{}]完成！'.format(self.working_svname))
@@ -189,9 +199,9 @@ class rinex_selector():
         svname:
             想看的卫星号
         '''
-        filename1 = os.path.join(self.navpath+r'/生成数据/',svname + '原始时间数据.json')
-        filename2 = os.path.join(self.navpath+r'/生成数据/',svname + '连续时间数据.json')
-        filename3 = os.path.join(self.navpath+r'/生成数据/',svname + '去重时间数据.json')
+        filename1 = os.path.join(self.navpath,'生成数据',svname + '原始时间数据.json')
+        filename2 = os.path.join(self.navpath,'生成数据',svname + '连续时间数据.json')
+        filename3 = os.path.join(self.navpath,'生成数据',svname + '去重时间数据.json')
         if typ=='连续':
             self.print_info(json.load(open(filename2,'r')))
         elif typ=='去重':
@@ -212,13 +222,13 @@ class rinex_selector():
         
         '''
         self.bar = tqdm(total=self.total)
-        self.navdb = pymongo.MongoClient(host='localhost',port=27017).gps.nav
+        self.navdb = pymongo.MongoClient('mongodb://localhost:27017/').gps.nav
         self.navdb.drop()
         self.show_info()
-        print('需要处理{}个卫星，{}个文件，共{}项.'.format(len(self.svs),len(self.navpath),self.total))
+        print('需要处理{}个卫星，{}个文件，共{}项.'.format(len(self.svs),len(self.file_list),self.total))
         print()
         print()
-        path = self.navpath + r'/生成数据'
+        path = os.path.join(self.navpath,'生成数据') 
         if os.path.exists(path):
             shutil.rmtree(path)
             os.mkdir(path)
@@ -227,10 +237,62 @@ class rinex_selector():
         #print('需要处理的卫星号:{}'.format(self.svs))
         for sv in self.svs:
             self.working_svname = sv
-            self.drop_same_and_contain(self.drop_points(self.get_nav_time_raw_info()))
+            #self.drop_same_and_contain()
+            r = self.get_nav_time_raw_info()
+            
         self.bar.close()
         print('[完成]相关数据保存在数据库以及:{}中.'.format(self.navpath))
         
 
-            
 
+
+
+            
+    def door(self,path):
+
+        self.navdb = pymongo.MongoClient('mongodb://localhost:27017/').gps.nav
+        self.navdb.drop()
+        self.show_info()
+        files = os.listdir(path)
+        total = 0
+        for item in files:
+            name = item[1:3]
+            
+            f = open(os.path.join(path,item),'r')
+            data = json.load(f)
+            print('卫星{}，有{}个文件有数据'.format(name,len(data)))
+            total = total + len(data)
+            self.drop_points2(data,name)
+        print(total)
+
+    def sort(self,path):
+        zhongji = {}
+        svss = []
+        for i in range(1,33,1):
+            if i<10:
+                svss.append('0'+str(i))
+            else:
+                svss.append(str(i))
+        self.navdb = pymongo.MongoClient('mongodb://localhost:27017/').gps.nav
+        for num in svss:
+        
+            
+            r = self.navdb.find({'gps':num})
+            last = []
+            for item in r:
+                last.append(float(item['last'])) 
+            now = float(last[0])
+            for item in last:
+                if float(item) == now:
+                    now = float(item)
+            final = self.navdb.find({'gps':num,'last':str(now)})
+            tool = []
+            for item in final:
+                tool.append(item['filename'][0:4])
+                zhongji[num] = tool
+
+        f = open(os.path.join(path),mode='w',encoding='utf-8')
+        f.write(json.dumps(zhongji,indent=4))
+        f.close()
+
+    

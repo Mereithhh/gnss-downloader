@@ -772,7 +772,7 @@ p, li { white-space: pre-wrap; }
      <string>根据卫星号自动选择</string>
     </property>
    </widget>
-   <widget class="QPushButton" name="pushButton_open_pause">
+   <widget class="QPushButton" name="pushButton_pause">
     <property name="geometry">
      <rect>
       <x>140</x>
