@@ -1,161 +1,170 @@
 <!DOCTYPE html>
 <html>
-	<head>
-		<meta charset="utf-8">
-		<title> GNSS数据下载器  By mereith </title>
-		<script src="vue.js" type="text/javascript" charset="UTF-8"></script>
-		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/meyer-reset/2.0/reset.min.css">
-	</head>
-	<body>
-		<canvas id="c"></canvas>
-		<script src='https://cdnjs.cloudflare.com/ajax/libs/gsap/2.0.2/TweenMax.min.js'></script>
-		<script  src="index.js"></script>
-		<style>
-			canvas{
-				position: absolute;
-				left: 0px;
-				top: 0px;
-				z-index: -1;
-			}
-			h1 {
-				margin-top: 50px;
-				font-size: 50px;
-				text-align: center;
-			}
-			h2 {
-				margin-top: 20px;
-				font-size: 25px;
-				text-align: center;
-				margin-bottom: 40px;
-			}
-			.main {
-				
-			}
-			.gif {
-				
-				text-align: center;
-				
-			}
-			.feature {
-				font-size: 20px;
-				font-style: bold;
-				
-			}
-			.download{
-				font-size: 30px;
-			}
-			a:link,a:visited {
-				color:green;
-			}
-			a:hover{
-				color: orange;
-			}
-			.right{
-				box-sizing: border-box;
-				margin-top: 40px;
-				margin-left: 120px;
-				
-			}
-			#buttom{
-				margin-top: 50px;
-				text-align: center;
-			}
-			picture{
-				width: 100%;
-			}
-			
-			#pic2{
-				max-width: 50%;
-				text-align: center;
-			}
-			#baba{
-				font-size: 30px;
-				margin-top: 30px;
-				margin-bottom: 50px;
-			}
-			.describle{
-				visibility: hidden;
-				position: absolute;
-				left: 50%;
-			}
-			.download{
-				
-			}
-			#ddd{
-				text-align: center;
-				font-size: 30px;
-				margin-top: 20px;
-				margin-bottom: 20px;
-			}
-			.link{
-				font-size: 30px;
-				
-			}
-		</style>
-		
-		
-		
-		<h1>GNSS数据下载器</h1>
-		<h2>检索下载ALL IN ONE</h2>
-		<div class="main">
-			<div class="gif"><picture>
-			<img src="show.gif" alt="介绍动图">
-			</picture>
-			<div id="ddd">
-				<a  class="link" target=_blank href="https://www.github.com/mereithhh/gnss-downloader">源码仓库</a></div>
-				<br>
-				<a  class="link" target=_blank href="https://pan.baidu.com/s/14yUCVKyjlVSTaf_XjzYvyg">软件下载(luo8)</a></div>
-			</div>
-			
-			
-			<div class="right">
-				<div class="describle">
-					<span class="feature">特性</span>
-					<div id="door2">
-					  <ul>
-					    <li v-for="todo in todos">
-					      {{ todo.text }}
-					    </li>
-					  </ul>
-					</div>
-				</div>
-				<div class="download">
-					
-				</div>
-			</div>
-			
-			
-		</div>
-		
-		<footer id="buttom">
-			
-			
-			
-			<div id="support">
-		<picture id="haibo"><img id="pic2" src="support.jpg" alt="捐助链接"></picture>
-		<div id="baba">感谢海波和阿宜的测试.</div>
-		<div style="margin-bottom: 100px;">wx:cs3cx4g</div>
-		</div></footer>
 
-	
-	<script type="text/javascript">
-		var app = new Vue({
-			el: "#door2",
-			data: {
-				todos: [
-				      { text: '根据条件自动检索数据' },
-				      { text: '根据卫星号自动选择具有最大观测时长的观测站' },
-				      { text: '可更换下载源' }
-				    ],
-			
-			}
-			
-		})
+<head>
+    <meta charset="utf-8">
+    <title> GNSS数据下载器 By mereith </title>
+    <script src="vue.js" type="text/javascript" charset="UTF-8"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/meyer-reset/2.0/reset.min.css">
+</head>
 
-		
-	</script>
+<body>
+    <canvas id="c"></canvas>
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/gsap/2.0.2/TweenMax.min.js'></script>
+    <script src="index.js"></script>
+    <style>
+        canvas {
+            position: absolute;
+            left: 0px;
+            top: 0px;
+            z-index: -1;
+        }
+        
+        h1 {
+            margin-top: 50px;
+            font-size: 50px;
+            text-align: center;
+        }
+        
+        h2 {
+            margin-top: 20px;
+            font-size: 25px;
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        
+        .gif {
+            text-align: center;
+        }
+        
+        .feature {
+            font-size: 20px;
+            font-style: bold;
+        }
+        
+        .download {
+            font-size: 30px;
+        }
+        
+        a:link,
+        a:visited {
+            color: green;
+        }
+        
+        a:hover {
+            color: orange;
+        }
+        
+        .right {
+            box-sizing: border-box;
+            margin-top: 40px;
+            margin-left: 120px;
+        }
+        
+        #buttom {
+            margin-top: 50px;
+            text-align: center;
+        }
+        
+        picture {
+            width: 100%;
+        }
+        
+        #pic2 {
+            max-width: 50%;
+            text-align: center;
+        }
+        
+        .baba {
+            font-size: 30px;
+            margin-top: 30px;
+            margin-bottom: 50px;
+        }
+        
+        .describle {
+            visibility: hidden;
+            position: absolute;
+            left: 50%;
+        }
+        
+        #ddd {
+            text-align: center;
+            font-size: 30px;
+            margin-top: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .link {
+            font-size: 30px;
+        }
+    </style>
 
-	</body>
-	
+
+
+    <h1>GNSS数据下载器</h1>
+    <h2>检索下载ALL IN ONE</h2>
+    <div class="main">
+        <div class="gif">
+            <picture>
+                <img src="show.gif" alt="介绍动图">
+            </picture>
+            <div id="ddd">
+                <a class="link" target=_blank href="https://www.github.com/mereithhh/gnss-downloader">源码仓库</a></div>
+            <br>
+            <a class="link" target=_blank href="https://pan.baidu.com/s/14yUCVKyjlVSTaf_XjzYvyg">软件下载(luo8)</a></div>
+    </div>
+
+
+    <div class="right">
+        <div class="describle">
+            <span class="feature">特性</span>
+            <div id="door2">
+                <ul>
+                    <li v-for="todo in todos">
+                        {{ todo.text }}
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <div class="download">
+
+        </div>
+    </div>
+
+
+    </div>
+
+    <footer id="buttom">
+
+
+
+        <div id="support">
+            <picture id="haibo"><img id="pic2" src="support.jpg" alt="捐助链接"></picture>
+            <div class="baba">感谢海波和阿宜的测试.</div>
+            <div class="baba"><a href="https://www.cs3cx4g.cn" alt="About me">About me.</a></div>
+            <div style="margin-bottom: 100px;">wx:cs3cx4g</div>
+        </div>
+    </footer>
+
+
+    <script type="text/javascript">
+        var app = new Vue({
+            el: "#door2",
+            data: {
+                todos: [{
+                    text: '根据条件自动检索数据'
+                }, {
+                    text: '根据卫星号自动选择具有最大观测时长的观测站'
+                }, {
+                    text: '可更换下载源'
+                }],
+
+            }
+
+        })
+    </script>
+
+</body>
+
 
 </html>
