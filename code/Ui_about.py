@@ -21,7 +21,7 @@ class Ui_About(object):
         font.setWeight(75)
         About.setFont(font)
         icon = QtGui.QIcon()
-        icon.addPixmap(QtGui.QPixmap("c:\\Users\\pve_win10_1\\Desktop\\gnss-downloader\\code\\../favicon.ico"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icon.addPixmap(QtGui.QPixmap("lib/favicon.ico"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         About.setWindowIcon(icon)
         About.setStyleSheet("border-image: url(lib/support.jpg);")
 

@@ -13,7 +13,7 @@ import json
 app = QApplication(sys.argv)
 def check_high_dpi():
      h = str(QApplication.desktop().screenGeometry()).split(',')[-2]
-     if int(h) > 1920:
+     if int(h) >= 1920:
          return True
      return False
 
