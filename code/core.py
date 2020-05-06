@@ -76,7 +76,7 @@ class gps_downloader(object):
         if len(self.times)==1:
             print('时间:     {:>}'.format(self.times[0]))
         else:
-            print('时间段:   {:>}'.format(self.times[0]+'  to  '+self.times[1]))
+            print('时间段:   {:>}'.format(self.times[0]+'  to  '+self.times[-1]))
         self.ppprint('文件类型:',self.filetype,'f')
         self.ppprint('观测站:  ',self.stations,'s')
         self.ppprint('共:      ',[self.total],'t')
@@ -91,12 +91,12 @@ class gps_downloader(object):
         end = date.fromisoformat(datas[1])
         days = (end - start) / timedelta(days=1)
         #print(start,end,days)
+        #times.append(str(start))
         #解算时间点
         for i in range(int(days)+1):
-            caltime = start + timedelta(days=1)
+            caltime = start + timedelta(days=i)
             times.append(str(caltime))
-        #print(times)
-
+        print(times)
         return times
     def ftp_connect(self):
         """
@@ -352,6 +352,7 @@ class gps_downloader(object):
         i = 0
         for time in self.times:
             for dst_type in self.filetype:
+                print(time)
                 path = self.get_path(time,dst_type)
                 if not self.serach_files(path,dst_type,time):
                     ui.show_warning('未发现可下载数据，请尝试更换日期')

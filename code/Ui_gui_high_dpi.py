@@ -364,7 +364,7 @@ class Ui_MainWindow(object):
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
-        MainWindow.setWindowTitle(_translate("MainWindow", "GNSS数据下载器     V2.0   By mereith."))
+        MainWindow.setWindowTitle(_translate("MainWindow", "GNSS数据下载器     V3.1   By mereith."))
         self.label.setText(_translate("MainWindow", "请选择文件类型"))
         self.checkBox_rnx_o.setText(_translate("MainWindow", "rnx3.x观测文件"))
         self.checkBox_rnx_n.setText(_translate("MainWindow", "rnx3.x广播星历"))
