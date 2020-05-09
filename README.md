@@ -1,9 +1,9 @@
 # gnss-downloader
 
 
-![](https://pic.mereith.com/img/English.png-slim)
+![image](https://github.com/Mereithhh/gnss-downloader/blob/master/pics/English.png)
 
-![](https://pic.mereith.com/img/Chinese.png-slim)
+![image](https://github.com/Mereithhh/gnss-downloader/blob/master/pics/Chinese.png)
 <br>
 **一个好用的GPS卫星数据检索下载工具**
 <br>
